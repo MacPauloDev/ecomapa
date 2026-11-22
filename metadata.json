@@ -1,0 +1,8 @@
+{
+  "projectName": "EcoMapa",
+  "groupName": "Araiguma",
+  "appName": "ecomapa",
+  "description": "Aplicação web para mapeamento e gestão local de pontos de descarte seletivo.",
+  "theme": ["sustentabilidade", "reciclagem", "mapa", "comunidade", "ods"],
+  "status": "prototype"
+}

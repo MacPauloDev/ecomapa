@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Admin | EcoMapa</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="admin-page">
+    <header class="topbar admin-topbar">
+      <div class="container nav">
+        <div class="brand">
+          <span class="brand-mark">E</span>
+          <div>
+            <strong>EcoMapa</strong>
+            <small>Painel Araiguma</small>
+          </div>
+        </div>
+        <button id="logoutButton" class="button button-outline" type="button">Sair</button>
+      </div>
+    </header>
+
+    <main class="admin-main container">
+      <section class="admin-header">
+        <div>
+          <p class="eyebrow">Área administrativa</p>
+          <h1>Gestão de pontos de descarte</h1>
+        </div>
+      </section>
+
+      <section class="admin-layout">
+        <form id="pointForm" class="panel-card admin-form">
+          <h2>Novo ponto</h2>
+
+          <input type="hidden" id="pointId" />
+
+          <label>
+            Nome do ponto
+            <input type="text" id="nome" placeholder="Ex: Ecoponto da escola" required />
+          </label>
+
+          <label>
+            Endereço
+            <input type="text" id="endereco" placeholder="Rua, número, bairro" required />
+          </label>
+
+          <div class="two-columns">
+            <label>
+              Latitude
+              <input type="number" id="latitude" step="any" required />
+            </label>
+            <label>
+              Longitude
+              <input type="number" id="longitude" step="any" required />
+            </label>
+          </div>
+
+          <label>
+            Materiais aceitos
+            <input type="text" id="materiaisAceitos" placeholder="pilhas, oleo, eletronicos" required />
+          </label>
+
+          <label>
+            Horário de funcionamento
+            <input type="text" id="horario" placeholder="08:00 às 18:00" required />
+          </label>
+
+          <label>
+            Contato
+            <input type="text" id="contato" placeholder="(92) 99999-9999" />
+          </label>
+
+          <label>
+            Fonte do endereço / ponto
+            <input type="url" id="fonteUrl" placeholder="https://..." />
+          </label>
+
+          <label>
+            Observações
+            <textarea id="observacoes" rows="3" placeholder="Materiais confirmados, restrições ou aviso ao cidadão"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">Salvar ponto</button>
+            <button id="cancelEdit" class="button button-secondary" type="button">Cancelar</button>
+          </div>
+        </form>
+
+        <section class="panel-card admin-list-wrapper">
+          <h2>Pontos cadastrados</h2>
+          <div id="adminPointsList" class="admin-points-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
