@@ -233,7 +233,7 @@ function focusPoint(point) {
 
 async function loadPoints() {
   try {
-    const response = await fetch('/api/pontos');
+    const response = await fetch('pontos.json');
     if (!response.ok) throw new Error(`Falha ao carregar os pontos (HTTP ${response.status}).`);
 
     const result = await response.json();
@@ -244,9 +244,10 @@ async function loadPoints() {
   } catch (error) {
     console.error('Não foi possível carregar os pontos do EcoMapa:', error);
     const message = document.createElement('p');
-    message.textContent = 'Não foi possível carregar os pontos. Verifique se o servidor está ativo.';
+    message.textContent = 'Não foi possível carregar pontos de descarte.';
     pointList.replaceChildren(message);
   }
+}
 }
 
 function useUserLocation() {
