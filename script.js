@@ -248,7 +248,6 @@ async function loadPoints() {
     pointList.replaceChildren(message);
   }
 }
-}
 
 function useUserLocation() {
   if (!navigator.geolocation) {
