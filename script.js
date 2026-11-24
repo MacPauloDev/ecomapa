@@ -61,7 +61,15 @@ function createFilterButtons() {
     button.addEventListener('click', () => {
       selectedMaterial = key;
       updateFilters();
-      renderMapAndList();
+      if (userCoordinates && points.length) {
+        const filtered = getFilteredPoints().slice(0, 5);
+        renderPointList(filtered);
+        markersLayer.clearLayers();
+        filtered.forEach((point) => {
+          const marker = L.marker([point.lat, point.lng]).addTo(markersLayer);
+          marker.options.pointId = point.id;
+        });
+      }
     });
 
     filtersContainer.appendChild(button);
@@ -154,7 +162,7 @@ function renderPointList(filteredPoints) {
     const emptyState = document.createElement('p');
     emptyState.textContent = points.length
       ? 'Nenhum ponto encontrado para esse filtro.'
-      : 'Não foi possível carregar pontos de descarte.';
+      : 'Clique em "Usar minha localização" para ver os 5 pontos mais próximos.';
     pointList.appendChild(emptyState);
     return;
   }
@@ -174,46 +182,6 @@ function buildMap() {
   }).addTo(map);
 
   markersLayer = L.layerGroup().addTo(map);
-}
-
-function renderMapAndList() {
-  const filtered = getFilteredPoints();
-  renderPointList(filtered);
-  markersLayer.clearLayers();
-
-  filtered.forEach((point) => {
-    const marker = L.marker([point.lat, point.lng]).addTo(markersLayer);
-    marker.options.pointId = point.id;
-    const safeSource = getSafeSourceUrl(point.source);
-    marker.bindPopup(`
-      <strong>${escapeHtml(point.nome)}</strong><br>
-      ${escapeHtml(point.endereco)}<br>
-      <small>${escapeHtml(point.hours)}</small><br>
-      <strong>Materiais:</strong> ${escapeHtml(point.materials.map((item) => materialMeta[item]?.label || item).join(', ') || 'Não informado')}<br>
-      <strong>Contato:</strong> ${escapeHtml(point.contact)}<br>
-      ${point.notes ? `<small>${escapeHtml(point.notes)}</small><br>` : ''}
-      ${safeSource ? `<a href="${escapeHtml(safeSource)}" target="_blank" rel="noopener noreferrer">Fonte do local</a><br>` : ''}
-      <a href="https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}" target="_blank" rel="noopener noreferrer">Abrir rota</a>
-    `);
-  });
-
-  if (userCoordinates) {
-    L.circleMarker([userCoordinates.lat, userCoordinates.lng], {
-      radius: 8,
-      color: '#fff',
-      weight: 2,
-      fillColor: '#2563eb',
-      fillOpacity: 1
-    }).bindPopup('Sua localização').addTo(markersLayer);
-  }
-
-  if (filtered.length) {
-    const bounds = filtered.map((point) => [point.lat, point.lng]);
-    if (userCoordinates) bounds.push([userCoordinates.lat, userCoordinates.lng]);
-    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
-  } else if (userCoordinates) {
-    map.flyTo([userCoordinates.lat, userCoordinates.lng], 13);
-  }
 }
 
 function getSafeSourceUrl(source) {
@@ -240,12 +208,13 @@ async function loadPoints() {
     points = result.map(toMapPoint).filter((point) =>
       Number.isFinite(point.lat) && Number.isFinite(point.lng)
     );
-    renderMapAndList();
+    return points;
   } catch (error) {
     console.error('Não foi possível carregar os pontos do EcoMapa:', error);
     const message = document.createElement('p');
     message.textContent = 'Não foi possível carregar pontos de descarte.';
     pointList.replaceChildren(message);
+    return [];
   }
 }
 
@@ -256,12 +225,51 @@ function useUserLocation() {
   }
 
   navigator.geolocation.getCurrentPosition(
-    (position) => {
+    async (position) => {
       userCoordinates = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
-      renderMapAndList();
+
+      if (!points.length) {
+        await loadPoints();
+      }
+
+      const filtered = getFilteredPoints().slice(0, 5);
+      renderPointList(filtered);
+      markersLayer.clearLayers();
+
+      filtered.forEach((point) => {
+        const marker = L.marker([point.lat, point.lng]).addTo(markersLayer);
+        marker.options.pointId = point.id;
+        const safeSource = getSafeSourceUrl(point.source);
+        marker.bindPopup(`
+          <strong>${escapeHtml(point.nome)}</strong><br>
+          ${escapeHtml(point.endereco)}<br>
+          <small>${escapeHtml(point.hours)}</small><br>
+          <strong>Materiais:</strong> ${escapeHtml(point.materials.map((item) => materialMeta[item]?.label || item).join(', ') || 'Não informado')}<br>
+          <strong>Contato:</strong> ${escapeHtml(point.contact)}<br>
+          ${point.notes ? `<small>${escapeHtml(point.notes)}</small><br>` : ''}
+          ${safeSource ? `<a href="${escapeHtml(safeSource)}" target="_blank" rel="noopener noreferrer">Fonte do local</a><br>` : ''}
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}" target="_blank" rel="noopener noreferrer">Abrir rota</a>
+        `);
+      });
+
+      L.circleMarker([userCoordinates.lat, userCoordinates.lng], {
+        radius: 8,
+        color: '#fff',
+        weight: 2,
+        fillColor: '#2563eb',
+        fillOpacity: 1
+      }).bindPopup('Sua localização').addTo(markersLayer);
+
+      if (filtered.length) {
+        const bounds = filtered.map((point) => [point.lat, point.lng]);
+        bounds.push([userCoordinates.lat, userCoordinates.lng]);
+        map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+      } else if (userCoordinates) {
+        map.flyTo([userCoordinates.lat, userCoordinates.lng], 13);
+      }
     },
     () => {
       alert('Não foi possível acessar sua localização. Permita o uso para calcular proximidade.');
@@ -273,4 +281,7 @@ locationButton.addEventListener('click', useUserLocation);
 
 createFilterButtons();
 buildMap();
-loadPoints();
+
+const initialMessage = document.createElement('p');
+initialMessage.textContent = 'Clique em "Usar minha localização" para ver os 5 pontos de descarte mais próximos.';
+pointList.replaceChildren(initialMessage);
