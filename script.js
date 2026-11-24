@@ -21,6 +21,7 @@ let selectedMaterial = 'todos';
 let map;
 let markersLayer;
 let userCoordinates = null;
+let showAllPoints = false;
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
   '&': '&amp;',
@@ -62,13 +63,7 @@ function createFilterButtons() {
       selectedMaterial = key;
       updateFilters();
       if (userCoordinates && points.length) {
-        const filtered = getFilteredPoints().slice(0, 5);
-        renderPointList(filtered);
-        markersLayer.clearLayers();
-        filtered.forEach((point) => {
-          const marker = L.marker([point.lat, point.lng]).addTo(markersLayer);
-          marker.options.pointId = point.id;
-        });
+        renderVisiblePoints();
       }
     });
 
@@ -101,6 +96,54 @@ function getFilteredPoints() {
   }
 
   return filtered;
+}
+
+function getVisiblePoints() {
+  const filtered = getFilteredPoints();
+  if (showAllPoints || !userCoordinates) {
+    return filtered;
+  }
+  return filtered.slice(0, 5);
+}
+
+function renderVisiblePoints() {
+  const visible = getVisiblePoints();
+  renderPointList(visible);
+  markersLayer.clearLayers();
+
+  visible.forEach((point) => {
+    const marker = L.marker([point.lat, point.lng]).addTo(markersLayer);
+    marker.options.pointId = point.id;
+    const safeSource = getSafeSourceUrl(point.source);
+    marker.bindPopup(`
+      <strong>${escapeHtml(point.nome)}</strong><br>
+      ${escapeHtml(point.endereco)}<br>
+      <small>${escapeHtml(point.hours)}</small><br>
+      <strong>Materiais:</strong> ${escapeHtml(point.materials.map((item) => materialMeta[item]?.label || item).join(', ') || 'Não informado')}<br>
+      <strong>Contato:</strong> ${escapeHtml(point.contact)}<br>
+      ${point.notes ? `<small>${escapeHtml(point.notes)}</small><br>` : ''}
+      ${safeSource ? `<a href="${escapeHtml(safeSource)}" target="_blank" rel="noopener noreferrer">Fonte do local</a><br>` : ''}
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}" target="_blank" rel="noopener noreferrer">Abrir rota</a>
+    `);
+  });
+
+  if (userCoordinates) {
+    L.circleMarker([userCoordinates.lat, userCoordinates.lng], {
+      radius: 8,
+      color: '#fff',
+      weight: 2,
+      fillColor: '#2563eb',
+      fillOpacity: 1
+    }).bindPopup('Sua localização').addTo(markersLayer);
+  }
+
+  if (visible.length) {
+    const bounds = visible.map((point) => [point.lat, point.lng]);
+    if (userCoordinates) bounds.push([userCoordinates.lat, userCoordinates.lng]);
+    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+  } else if (userCoordinates) {
+    map.flyTo([userCoordinates.lat, userCoordinates.lng], 13);
+  }
 }
 
 function createPointCard(point) {
@@ -162,7 +205,7 @@ function renderPointList(filteredPoints) {
     const emptyState = document.createElement('p');
     emptyState.textContent = points.length
       ? 'Nenhum ponto encontrado para esse filtro.'
-      : 'Clique em "Usar minha localização" para ver os 5 pontos mais próximos.';
+      : 'Clique em "Usar minha localização" para ver os pontos de descarte mais próximos.';
     pointList.appendChild(emptyState);
     return;
   }
@@ -235,41 +278,7 @@ function useUserLocation() {
         await loadPoints();
       }
 
-      const filtered = getFilteredPoints().slice(0, 5);
-      renderPointList(filtered);
-      markersLayer.clearLayers();
-
-      filtered.forEach((point) => {
-        const marker = L.marker([point.lat, point.lng]).addTo(markersLayer);
-        marker.options.pointId = point.id;
-        const safeSource = getSafeSourceUrl(point.source);
-        marker.bindPopup(`
-          <strong>${escapeHtml(point.nome)}</strong><br>
-          ${escapeHtml(point.endereco)}<br>
-          <small>${escapeHtml(point.hours)}</small><br>
-          <strong>Materiais:</strong> ${escapeHtml(point.materials.map((item) => materialMeta[item]?.label || item).join(', ') || 'Não informado')}<br>
-          <strong>Contato:</strong> ${escapeHtml(point.contact)}<br>
-          ${point.notes ? `<small>${escapeHtml(point.notes)}</small><br>` : ''}
-          ${safeSource ? `<a href="${escapeHtml(safeSource)}" target="_blank" rel="noopener noreferrer">Fonte do local</a><br>` : ''}
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}" target="_blank" rel="noopener noreferrer">Abrir rota</a>
-        `);
-      });
-
-      L.circleMarker([userCoordinates.lat, userCoordinates.lng], {
-        radius: 8,
-        color: '#fff',
-        weight: 2,
-        fillColor: '#2563eb',
-        fillOpacity: 1
-      }).bindPopup('Sua localização').addTo(markersLayer);
-
-      if (filtered.length) {
-        const bounds = filtered.map((point) => [point.lat, point.lng]);
-        bounds.push([userCoordinates.lat, userCoordinates.lng]);
-        map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
-      } else if (userCoordinates) {
-        map.flyTo([userCoordinates.lat, userCoordinates.lng], 13);
-      }
+      renderVisiblePoints();
     },
     () => {
       alert('Não foi possível acessar sua localização. Permita o uso para calcular proximidade.');
@@ -279,9 +288,33 @@ function useUserLocation() {
 
 locationButton.addEventListener('click', useUserLocation);
 
+// Toggle button for showing all points
+const toggleButton = document.createElement('button');
+toggleButton.id = 'toggleAllPoints';
+toggleButton.className = 'button button-outline full-width';
+toggleButton.type = 'button';
+toggleButton.textContent = 'Mostrar todos os pontos';
+toggleButton.style.marginTop = '0.5rem';
+locationButton.parentNode.insertBefore(toggleButton, locationButton.nextSibling);
+
+toggleButton.addEventListener('click', async () => {
+  if (!userCoordinates) {
+    alert('Use sua localização primeiro para ordenar os pontos por proximidade.');
+    return;
+  }
+
+  if (!points.length) {
+    await loadPoints();
+  }
+
+  showAllPoints = !showAllPoints;
+  toggleButton.textContent = showAllPoints ? 'Mostrar apenas 5 mais próximos' : 'Mostrar todos os pontos';
+  renderVisiblePoints();
+});
+
 createFilterButtons();
 buildMap();
 
 const initialMessage = document.createElement('p');
-initialMessage.textContent = 'Clique em "Usar minha localização" para ver os 5 pontos de descarte mais próximos.';
+initialMessage.textContent = 'Clique em "Usar minha localização" para ver os pontos de descarte mais próximos.';
 pointList.replaceChildren(initialMessage);
