@@ -17,6 +17,7 @@ const pointList = document.getElementById('pointList');
 const locationButton = document.getElementById('useLocation');
 
 let points = [];
+let pointsLoaded = false;
 let selectedMaterial = 'todos';
 let map;
 let markersLayer;
@@ -62,9 +63,7 @@ function createFilterButtons() {
     button.addEventListener('click', () => {
       selectedMaterial = key;
       updateFilters();
-      if (userCoordinates && points.length) {
-        renderVisiblePoints();
-      }
+      if (pointsLoaded) renderVisiblePoints();
     });
 
     filtersContainer.appendChild(button);
@@ -251,13 +250,14 @@ async function loadPoints() {
     points = result.map(toMapPoint).filter((point) =>
       Number.isFinite(point.lat) && Number.isFinite(point.lng)
     );
+    pointsLoaded = true;
     return points;
   } catch (error) {
     console.error('Não foi possível carregar os pontos do EcoMapa:', error);
     const message = document.createElement('p');
     message.textContent = 'Não foi possível carregar pontos de descarte.';
     pointList.replaceChildren(message);
-    return [];
+    return null;
   }
 }
 
@@ -274,8 +274,9 @@ function useUserLocation() {
         lng: position.coords.longitude
       };
 
-      if (!points.length) {
-        await loadPoints();
+      if (!pointsLoaded) {
+        const loadedPoints = await loadPoints();
+        if (!loadedPoints) return;
       }
 
       renderVisiblePoints();
@@ -286,7 +287,7 @@ function useUserLocation() {
   );
 }
 
-locationButton.addEventListener('click', useUserLocation);
+if (locationButton) locationButton.addEventListener('click', useUserLocation);
 
 // Toggle button for showing all points
 const toggleButton = document.createElement('button');
@@ -295,7 +296,7 @@ toggleButton.className = 'button button-outline full-width';
 toggleButton.type = 'button';
 toggleButton.textContent = 'Mostrar todos os pontos';
 toggleButton.style.marginTop = '0.5rem';
-locationButton.parentNode.insertBefore(toggleButton, locationButton.nextSibling);
+if (locationButton?.parentNode) locationButton.parentNode.insertBefore(toggleButton, locationButton.nextSibling);
 
 toggleButton.addEventListener('click', async () => {
   if (!userCoordinates) {
@@ -303,8 +304,9 @@ toggleButton.addEventListener('click', async () => {
     return;
   }
 
-  if (!points.length) {
-    await loadPoints();
+  if (!pointsLoaded) {
+    const loadedPoints = await loadPoints();
+    if (!loadedPoints) return;
   }
 
   showAllPoints = !showAllPoints;
@@ -312,9 +314,9 @@ toggleButton.addEventListener('click', async () => {
   renderVisiblePoints();
 });
 
-createFilterButtons();
-buildMap();
+if (filtersContainer && pointList) createFilterButtons();
+if (document.getElementById('map') && typeof L !== 'undefined') buildMap();
 
-const initialMessage = document.createElement('p');
-initialMessage.textContent = 'Clique em "Usar minha localização" para ver os pontos de descarte mais próximos.';
-pointList.replaceChildren(initialMessage);
+if (pointList && map) loadPoints().then((loadedPoints) => {
+  if (loadedPoints) renderVisiblePoints();
+});

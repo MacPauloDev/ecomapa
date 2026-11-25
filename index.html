@@ -1,216 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="EcoMapa é a aplicação web do grupo Araiguma para localizar pontos de descarte seletivo em bairros locais."
-    />
-    <title>EcoMapa | Araiguma</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="container nav">
-        <div class="brand" aria-label="EcoMapa Araiguma">
-          <span class="brand-mark">E</span>
-          <div>
-            <strong>EcoMapa</strong>
-            <small>Grupo Araiguma</small>
-          </div>
-        </div>
-
-        <nav class="main-nav" aria-label="Navegação principal">
-          <a href="#sobre">Sobre</a>
-          <a href="#funcionalidades">Funcionalidades</a>
-          <a href="mapa.html">Mapa</a>
-          <a href="#admin">Admin</a>
-        </nav>
-
-        <a class="button button-outline" href="admin.html">Área administrativa</a>
-      </div>
-    aaa
-    <main>
-      <section class="hero">
-        <div class="container hero-grid">
-          <div class="hero-copy">
-            <p class="eyebrow">Sustentabilidade local • comunidade • educação</p>
-
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EcoMapa — encontre pontos de descarte seletivo em Manaus." />
+  <title>EcoMapa | Araiguma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-content">
+        <h1>Vamos entrar?</h1>
         <div class="hero-actions">
-          <a class="button button-primary" href="mapa.html">Ver mapa</a>
-          <a class="button button-secondary" href="#sobre">Entender o projeto</a>
+          <a class="button button-white" href="admin.html">Cadastrar</a>
+          <a class="button button-glass" href="mapa.html">Começar sem login</a>
         </div>
-          </div>
-
-          <div class="hero-panel" aria-label="Resumo da solução">
-            <div class="panel-card">
-              <span class="chip success">Operação ativa</span>
-              <h2>EcoMapa</h2>
-              <p>
-                Solução web responsiva para encontrar pontos de descarte, filtrar por material e
-                aumentar a visibilidade das opções de coleta local.
-              </p>
-
-              <div class="hero-demo" aria-label="Demonstracao de materiais">
-                <div class="demo-ring">
-                  <div class="demo-item" style="transform: rotate(0deg) translateY(-78px)">
-                    <img class="demo-img" src="assets/oilIcon.png" alt="Óleo" />
-                  </div>
-                  <div class="demo-item" style="transform: rotate(90deg) translateY(-78px)">
-                    <img class="demo-img" src="assets/EletronicoQuebrado.png" alt="Eletrônicos" />
-                  </div>
-                  <div class="demo-item" style="transform: rotate(180deg) translateY(-78px)">
-                    <img class="demo-img" src="assets/vidro-quebrado.png" alt="Vidro" />
-                  </div>
-                  <div class="demo-item" style="transform: rotate(270deg) translateY(-78px)">
-                    <img class="demo-img" src="assets/Black-and-White Garbage Icon(1).png" alt="Resíduos" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="map-preview" aria-label="Prévia do mapa do EcoMapa">
+          <div class="map-zoom"><span>⌕</span></div>
+          <div class="map-pin pin-one"></div>
+          <div class="map-pin pin-two"></div>
+          <div class="map-pin pin-three"></div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="sobre" class="section">
-        <div class="container section-head">
-          <p class="eyebrow">Contexto do projeto</p>
-          <h2>Uma resposta prática para o descarte inadequado.</h2>
-        </div>
+    <section class="intro" id="sobre">
+      <div class="intro-inner">
+        <h2>Para ter um melhor descarte</h2>
+        <p>Entre em nosso projeto e ajude a melhorar o descarte.</p>
+        <a class="button button-dark" href="mapa.html">Ver mapa</a>
+      </div>
+    </section>
 
-        <div class="container info-grid">
-          <article class="info-card">
-            <h3>Problema</h3>
-            <p>
-              O descarte inadequado de resíduos sólidos e especiais continua gerando contaminação de
-              solo, água e redes de esgoto. Muitos cidadãos não sabem onde descartar pilhas, óleo,
-              eletrônicos e outros materiais corretamente.
-            </p>
+    <section class="gallery-section">
+      <div class="gallery-grid">
+        <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=900&q=85" alt="Pessoa separando materiais recicláveis" />
+        <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=900&q=85" alt="Mãos cultivando uma muda" />
+        <img src="https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=900&q=85" alt="Ponto de coleta de resíduos" />
+        <img src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=900&q=85" alt="Materiais de vidro para reciclagem" />
+      </div>
+    </section>
+
+    <section class="response-section">
+      <div class="response-inner">
+        <h2>Uma resposta prática para o descarte inadequado.</h2>
+        <p class="response-lead">O EcoMapa aproxima a informação de quem precisa descartar resíduos de forma correta, fortalecendo a logística reversa e o cuidado com a cidade.</p>
+        <div class="response-grid">
+          <article>
+            <h3><span class="status-dot green"></span> Problema</h3>
+            <p>O descarte inadequado de resíduos sólidos e especiais continua gerando contaminação de solo, água e redes de esgoto. Muitos cidadãos não sabem onde descartar pilhas, óleo, eletrônicos e outros materiais corretamente.</p>
           </article>
-
-          <article class="info-card">
-            <h3>Justificativa</h3>
-            <p>
-              O projeto nasceu para facilitar a logística reversa no bairro e na escola, apoiar a
-              comunidade local e contribuir com os ODS 11 e 12 por meio de tecnologia acessível e
-              informação clara.
-            </p>
-          </article>
-
-          <article class="info-card">
-            <h3>Objetivo</h3>
-            <p>
-              Desenvolver uma aplicação web interativa para mapear, localizar e gerenciar pontos de
-              descarte seletivo, com interface pública e área administrativa segura.
-            </p>
+          <article>
+            <h3><span class="status-dot pink"></span> Solução do projeto</h3>
+            <p>O projeto facilita a logística reversa no bairro e na escola, apoia a comunidade local e contribui com os ODS 11 e 12 por meio de tecnologia acessível e informação clara.</p>
           </article>
         </div>
-      </section>
-
-      <section class="section dark">
-        <div class="container section-head">
-          <p class="eyebrow">Mapa interativo</p>
-          <h2>Encontre o ponto de coleta mais próximo.</h2>
-          <p class="lead">
-            Acesse o mapa interativo com mais de 60 pontos de descarte em Manaus,
-            filtre por material e encontre o local mais próximo de você.
-          </p>
-          <div class="hero-actions" style="margin-top:1.5rem">
-            <a class="button button-primary" href="mapa.html">Abrir mapa</a>
-          </div>
-        </div>
-      </section>
-
-      <section id="funcionalidades" class="section">
-        <div class="container section-head">
-          <p class="eyebrow">Funcionalidades</p>
-          <h2>O sistema foi pensado para uso público e gestão local.</h2>
-        </div>
-
-        <div class="container feature-grid">
-          <article class="feature-card">
-            <span class="feature-icon">📍</span>
-            <h3>Mapa interativo</h3>
-            <p>Marcadores geolocalizados com endereço, coordenadas e materiais aceitos.</p>
-          </article>
-
-          <article class="feature-card">
-            <span class="feature-icon">🧹</span>
-            <h3>Filtro por tipo de resíduo</h3>
-            <p>Busca rápida por pilhas, óleo, eletrônicos, vidro, plástico e metais.</p>
-          </article>
-
-          <article class="feature-card">
-            <span class="feature-icon">📱</span>
-            <h3>Responsivo e acessível</h3>
-            <p>Interface mobile-first, com fontes legíveis e boa experiência em navegadores modernos.</p>
-          </article>
-
-          <article class="feature-card">
-            <span class="feature-icon">🛡️</span>
-            <h3>Admin seguro</h3>
-            <p>Área administrativa protegida com autenticação e armazenamento de senhas com hash.</p>
-          </article>
-        </div>
-      </section>
-
-      <section id="admin" class="section accent">
-        <div class="container admin-grid">
-          <div>
-            <p class="eyebrow">Administração</p>
-            <h2>Painel para cadastrar, editar e remover pontos de coleta.</h2>
-            <p>
-              O gestor pode manter os dados atualizados, registrar o horário de funcionamento,
-              materiais aceitos e informações de contato dos pontos parceiros.
-            </p>
-          </div>
-
-          <form id="loginForm" class="admin-form panel-card" aria-label="Login administrativo">
-            <label>
-              E-mail
-              <input id="loginEmail" type="email" placeholder="admin@ecomapa.com" required />
-            </label>
-            <label>
-              Senha
-              <input id="loginPassword" type="password" placeholder="••••••••" required />
-            </label>
-            <button class="button button-primary full-width" type="submit">Entrar no painel</button>
-          </form>
-        </div>
-      </section>
-
-      </section>
-    </main>
+      </div>
+    </section>
 
     <footer class="footer">
-      <div class="container footer-content">
-        <div>
+      <div class="footer-inner">
+        <div class="footer-brand">
           <strong>EcoMapa</strong>
-          <span>Projeto do grupo Araiguma</span>
+          <span>Projeto do<br />grupo Araiguma</span>
         </div>
-        <p>Aplicação desenvolvida com foco em descarte seletivo, educação ambiental e inclusão local.</p>
+        <div class="footer-logo" aria-label="Grupo Araiguma">
+          <span class="logo-ring"><span class="logo-face">Araiguma</span></span>
+        </div>
       </div>
     </footer>
-
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <script src="script.js"></script>
-    <script src="login.js"></script>
-  </body>
+  </main>
+  <script src="login.js"></script>
+</body>
 </html>

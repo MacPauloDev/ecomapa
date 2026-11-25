@@ -1,96 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Mapa de pontos de descarte seletivo em Manaus - EcoMapa"
-    />
-    <title>EcoMapa | Mapa de pontos de descarte</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="container nav">
-        <div class="brand" aria-label="EcoMapa Araiguma">
-          <span class="brand-mark">E</span>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Encontre pontos de descarte seletivo em Manaus com o mapa interativo do EcoMapa." />
+  <title>EcoMapa | Mapa de descarte</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400&display=swap" rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="map-page">
+  <header class="map-topbar">
+    <div class="map-topbar-inner">
+      <a class="map-brand" href="index.html" aria-label="EcoMapa — página inicial">
+        <img class="map-brand-mark" src="assets/araiguma-logo.png" alt="" />
+        <span><strong>EcoMapa</strong><small>Projeto Araiguma</small></span>
+      </a>
+      <nav class="map-nav" aria-label="Navegação principal">
+        <a href="index.html">Início</a>
+        <a href="index.html#sobre">Sobre o projeto</a>
+      </nav>
+      <a class="button button-outline" href="admin.html">Área administrativa</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="map-hero">
+      <div class="map-hero-inner">
+        <a class="map-back-link" href="index.html">← Voltar ao início</a>
+        <p class="map-eyebrow">Descarte consciente começa por aqui</p>
+        <h1>Encontre um ponto<br />perto de você.</h1>
+        <p>Explore os locais de coleta em Manaus, filtre pelo material e escolha o destino certo para cada resíduo.</p>
+      </div>
+    </section>
+
+    <section class="map-content" aria-labelledby="map-section-title">
+      <div class="map-content-inner">
+        <div class="map-section-heading">
           <div>
-            <strong>EcoMapa</strong>
-            <small>Grupo Araiguma</small>
+            <p class="map-eyebrow map-eyebrow-dark">Mapa interativo</p>
+            <h2 id="map-section-title">Pontos de descarte</h2>
           </div>
+          <p>Selecione um ponto para ver mais detalhes ou abrir a rota.</p>
         </div>
 
-        <nav class="main-nav" aria-label="Navegação principal">
-          <a href="index.html">Início</a>
-          <a href="index.html#sobre">Sobre</a>
-          <a href="index.html#funcionalidades">Funcionalidades</a>
-          <a href="admin.html">Admin</a>
-        </nav>
-
-        <a class="button button-outline" href="admin.html">Área administrativa</a>
-      </div>
-    </header>
-
-    <main>
-      <section class="section dark">
-        <div class="container section-head">
-          <p class="eyebrow">Mapa interativo</p>
-          <h2>Encontre o ponto de coleta mais próximo.</h2>
-          <p class="lead">
-            Filtre por material, use sua localização e encontre o ponto de descarte
-            mais próximo de você.
-          </p>
-        </div>
-
-        <div class="container map-shell">
-          <aside class="filters panel-card">
-            <h3>Filtrar por material</h3>
+        <div class="map-shell">
+          <aside class="map-filters map-card" aria-labelledby="filter-title">
+            <div class="map-card-heading">
+              <span class="map-card-icon" aria-hidden="true">⌕</span>
+              <div>
+                <h3 id="filter-title">Filtrar por material</h3>
+                <p>Encontre o descarte adequado</p>
+              </div>
+            </div>
             <div id="materialFilters" class="filter-group" aria-label="Filtros de resíduos"></div>
-            <button id="useLocation" class="button button-primary full-width" type="button">
-              Usar minha localização
-            </button>
+            <div class="location-actions">
+              <button id="useLocation" class="button button-primary full-width" type="button">
+                Usar minha localização
+              </button>
+            </div>
           </aside>
 
-          <div class="map-panel panel-card">
-            <div id="map" aria-label="Mapa com pontos de descarte"></div>
+          <div class="map-panel map-card">
+            <div id="map" role="application" aria-label="Mapa interativo dos pontos de descarte em Manaus"></div>
+            <p class="map-attribution-note">Dados do mapa © OpenStreetMap</p>
           </div>
 
-          <aside class="point-list panel-card">
-            <h3>Pontos cadastrados</h3>
-            <div id="pointList" class="point-list-content"></div>
+          <aside class="point-list map-card" aria-labelledby="points-title">
+            <div class="point-list-heading">
+              <div>
+                <h3 id="points-title">Pontos cadastrados</h3>
+                <p>Escolha um local para ver no mapa</p>
+              </div>
+              <span class="point-list-pin" aria-hidden="true">⌖</span>
+            </div>
+            <div id="pointList" class="point-list-content" aria-live="polite">
+              <p>Carregando pontos de descarte...</p>
+            </div>
           </aside>
         </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="container footer-content">
-        <div>
-          <strong>EcoMapa</strong>
-          <span>Projeto do grupo Araiguma</span>
-        </div>
-        <p>Aplicação desenvolvida com foco em descarte seletivo, educação ambiental e inclusão local.</p>
+        <p class="map-disclaimer">Confirme os materiais aceitos e o horário de funcionamento antes de levar seus resíduos.</p>
       </div>
-    </footer>
+    </section>
+  </main>
 
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
-    <script src="script.js"></script>
-  </body>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <strong>EcoMapa</strong>
+        <span>Projeto do<br />grupo Araiguma</span>
+      </div>
+      <div class="footer-logo" aria-label="Grupo Araiguma">
+        <span class="logo-ring"><span class="logo-face">Araiguma</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="script.js"></script>
+</body>
 </html>
